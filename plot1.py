@@ -4,11 +4,11 @@ import itertools
 
 colors = plt.rcParams['axes.prop_cycle'].by_key()['color']
 
-data = np.load('bench1.npz')
+data = np.load('bench1-dunkel.npz')
 tlist = data['tlist']
 mblist = data['mblist']
 
-fig, ax = plt.subplots(figsize=(10,10))
+fig, ax = plt.subplots(figsize=(10,5))
 #ax.semilogy(mblist, mblist / tlist[0,:])
 for j, color in zip(range(tlist.shape[1]), itertools.cycle(colors)):
     rate = mblist[j] / tlist[:, j]
@@ -19,7 +19,11 @@ for j, color in zip(range(tlist.shape[1]), itertools.cycle(colors)):
     ax.plot(mblist[j], rate.mean(), '*', color=color, ms=2)
     ax.plot(mblist[j]*np.ones(2), [rate.min(), rate.max()], '-', lw=0.5, color=color)
 
-ax.plot(mblist, mblist / tlist.mean(axis=0), 'k-', lw=1)
+ax.semilogx(mblist, mblist / tlist.mean(axis=0), 'k-', lw=1)
 
+ax.set_xlabel('MB')
+ax.set_ylabel('MB/sec')
+ax.grid(True)
 
+plt.savefig('dunkel-rates.pdf')
 plt.show()
