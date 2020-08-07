@@ -2,15 +2,14 @@ import numpy as np
 from time import time
 import os
 
-nmax = 1000
-nlist = [1024*128*k for k in range(1,nmax)] # sizes, in MB
+nlist = [1024*128*int(k) for k in np.logspace(1,4,20)] # sizes, in MB
 ntests = 5
 
 tlist = np.zeros((ntests, len(nlist)))
 mblist = np.zeros(len(nlist))
 
 for j, n in enumerate(nlist):
-    print(f'{j} of {nmax}')
+    print(f'{j} of {max(nlist)}')
     a = np.random.rand(n)
 
     # open / write
