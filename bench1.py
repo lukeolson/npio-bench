@@ -9,7 +9,7 @@ tlist = np.zeros((ntests, len(nlist)))
 mblist = np.zeros(len(nlist))
 
 for j, n in enumerate(nlist):
-    print(f'{j} of {max(nlist)}')
+    print(f'{j} of {len(nlist)}')
     a = np.random.rand(n)
 
     # open / write
