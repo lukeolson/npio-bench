@@ -13,7 +13,7 @@ def whichsize(mb, sizes):
     return sizes[0] if mb < 1024 else whichsize(mb >> 10, sizes[1:])
 
 
-inname = 'bench1-lassen.npz'
+inname = 'bench1.npz'
 data = np.load(inname)
 
 tlist = data['tlist']
