@@ -1,11 +1,11 @@
-"""bench1, Using .tofile(), write a numpy array of increasing size."""
+"""bench3, Using .write(.tobytes()), write a numpy array of increasing size."""
 
 import os
 from time import time
 import numpy as np
 
 
-def bench(nlist, ntests=5, outname='bench1.npz'):
+def bench(nlist, ntests=5, outname='bench3.npz'):
     """
     Parameters
     ----------
@@ -41,7 +41,7 @@ def bench(nlist, ntests=5, outname='bench1.npz'):
 
             tstart = time()
             with open(fname, 'wb') as f:
-                avec.tofile(f)
+                f.write(avec.tobytes())
             tend = time()
             tlist[i, j] = tend - tstart
 
@@ -55,5 +55,5 @@ def bench(nlist, ntests=5, outname='bench1.npz'):
 if __name__ == '__main__':
     # list of sizes in MB
     nlist = [1024 * 128 * int(k) for k in np.logspace(1, 2, 8)]
-    ntests = 5
-    bench(nlist, ntests, 'bench1.npz')
+    ntests = 10
+    bench(nlist, ntests, 'bench3.npz')

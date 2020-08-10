@@ -1,11 +1,11 @@
-"""bench1, Using .tofile(), write a numpy array of increasing size."""
+"""bench4, Using np.memmap, write a numpy array of increasing size."""
 
 import os
 from time import time
 import numpy as np
 
 
-def bench(nlist, ntests=5, outname='bench1.npz'):
+def bench(nlist, ntests=5, outname='bench4.npz'):
     """
     Parameters
     ----------
@@ -40,8 +40,9 @@ def bench(nlist, ntests=5, outname='bench1.npz'):
             fname = f'test-{n}-{i}.bin'
 
             tstart = time()
-            with open(fname, 'wb') as f:
-                avec.tofile(f)
+            f = np.memmap(fname, dtype=avec.dtype, mode='w+', shape=avec.shape)
+            f[:] = avec[:]
+            del f  # flush memory to disk, then delete object
             tend = time()
             tlist[i, j] = tend - tstart
 
@@ -55,5 +56,5 @@ def bench(nlist, ntests=5, outname='bench1.npz'):
 if __name__ == '__main__':
     # list of sizes in MB
     nlist = [1024 * 128 * int(k) for k in np.logspace(1, 2, 8)]
-    ntests = 5
-    bench(nlist, ntests, 'bench1.npz')
+    ntests = 10
+    bench(nlist, ntests, 'bench4.npz')
