@@ -3,19 +3,10 @@
 Usage: python plot-rate-vs-mb.py bench1.npz
 """
 
+import sys
 import itertools
 import matplotlib.pyplot as plt
 import numpy as np
-import sys
-sizes = ['bytes', 'KB', 'MB', 'GB', 'TB', 'PB']
-
-
-def whichsize(mb, sizes):
-    """
-    Find the "size" of mb.
-    """
-    return sizes[0] if mb < 1024 else whichsize(mb >> 10, sizes[1:])
-
 
 if len(sys.argv) > 1:
     inname = sys.argv[1]
@@ -43,10 +34,28 @@ ax.set_xlabel('MB')
 ax.set_ylabel('MB/sec')
 ax.grid(True)
 
-# maxsize = whichsize(int(mblist.max()), sizes)
-# maxk = sizes.index(maxsize)
-# xticks = [n*1024**k for k in (0,1,2) for n in (1,10,100)]
-# ax.set_xticks(xticks)
+# plot some helpful ticks up top
+xticks = np.array([n * 1024**k for k in (0, 1, 2) for n in (1, 10, 100)])
+xticklabels = []
+for x in xticks:
+    if x < 1024:
+        xticklabels.append(f'{x} MB')
+        continue
+    if x < 1024 * 1024:
+        xticklabels.append(f'{int(x/1024)} GB')
+        continue
+    xticklabels.append(f'{int(x/1024/1024)} TB')
+xticklabels = np.array(xticklabels)
+J = np.where((xticks <= mblist.max()) & (xticks >= mblist.min()))[0]
+xticks = xticks[J]
+xticklabels = xticklabels[J]
+
+ax2 = ax.twiny()
+ax2.set_xlim(ax.get_xlim())
+ax2.set_xscale('log')
+ax2.set_xticks(list(xticks))
+ax2.set_xticklabels(list(xticklabels))
+ax2.minorticks_off()
 
 plt.savefig(inname.replace('.npz', '.pdf'))
 plt.show()

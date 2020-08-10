@@ -21,4 +21,3 @@ python plot-rate-vs-mb.py bench1.npz
 - https://numpy.org/doc/stable/reference/generated/numpy.memmap.html
 - https://github.com/nschloe/perfplot
 - https://stackoverflow.com/questions/51391713/efficient-way-of-writing-numpy-arrays-to-file-in-python
-
