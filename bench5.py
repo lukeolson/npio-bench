@@ -1,11 +1,11 @@
-"""bench2. Using MPI-IO, write a numpy array of increasing size."""
-import time
+"""bench2. Using MPI-IO with forced sync, write a numpy array of increasing size."""
 import os
+import time
 from mpi4py import MPI
 import numpy as np
 
 
-def bench(nlist, ntests=5, outname='bench2.npz'):
+def bench(nlist, ntests=5, outname='bench5.npz'):
     """
     Parameters
     ----------
@@ -45,6 +45,7 @@ def bench(nlist, ntests=5, outname='bench2.npz'):
             f = MPI.File.Open(comm, fname, MPI.MODE_WRONLY | MPI.MODE_CREATE)
             offset = comm.Get_rank() * avec.nbytes
             f.Write_at_all(offset, avec)
+            f.Sync()
             f.Close()
             tend = MPI.Wtime()
 
@@ -70,5 +71,5 @@ def bench(nlist, ntests=5, outname='bench2.npz'):
 if __name__ == '__main__':
     # list of sizes in MB
     nlist = [1024 * 128 * int(k) for k in np.logspace(1, 2, 8)]
-    ntests = 5
-    bench(nlist, ntests, 'bench2.npz')
+    ntests = 10
+    bench(nlist, ntests)
