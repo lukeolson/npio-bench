@@ -54,6 +54,6 @@ def bench(nlist, ntests=5, outname='bench1.npz'):
 
 if __name__ == '__main__':
     # list of sizes in MB
-    nlist = [1024 * 128 * int(k) for k in np.logspace(1, 2, 8)]
+    nlist = [1024 * 128 * int(k) for k in np.logspace(1, 15, 20, base=2.0)]
     ntests = 5
     bench(nlist, ntests, 'bench1.npz')

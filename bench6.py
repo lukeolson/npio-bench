@@ -1,11 +1,10 @@
-"""bench2. Using MPI-IO, write a numpy array of increasing size."""
-import time
+"""bench6. Using .tofile, write data with a file-per-rank strategy."""
 import os
 from mpi4py import MPI
 import numpy as np
 
 
-def bench(nlist, ntests=5, outname='bench2.npz'):
+def bench(nlist, ntests=5, outname='bench6.npz'):
     """
     Parameters
     ----------
@@ -43,27 +42,7 @@ def bench(nlist, ntests=5, outname='bench2.npz'):
                 avec.tofile(f)
             tend = MPI.Wtime()
 
-
-            tlist[i, j] = tend - tstart
-
-            if os.path.exists(fname):
-                os.remove(fname)
-
-        # open / write
-        for i in range(ntests):
-            time.sleep(0.5)
-            fname = f'test-{n}-{i}.bin'
-
-            # sync the timers
-
-            f = MPI.File.Open(comm, fname, MPI.MODE_WRONLY | MPI.MODE_CREATE)
-            offset = comm.Get_rank() * avec.nbytes
-            f.Write_at_all(offset, avec)
-            # f.Write_at_all(offset, [avec, len(avec), MPI.DOUBLE])
-            f.Close()
-            tend = MPI.Wtime()
-
-            # grab the time that took the longest (instead of timing an end barrier)
+            # get max time across ranks
             timeperproc = np.array([tend - tstart])
             maxtime = np.array([0.0])
             comm.Reduce(timeperproc,
@@ -72,10 +51,8 @@ def bench(nlist, ntests=5, outname='bench2.npz'):
             if rank == 0:
                 tlist[i, j] = maxtime[0]
 
-            comm.Barrier()
-            if rank == 0:
-                if os.path.exists(fname):
-                    os.remove(fname)
+            if os.path.exists(fname):
+                os.remove(fname)
 
     if rank == 0:
         if outname is not None:
@@ -84,6 +61,9 @@ def bench(nlist, ntests=5, outname='bench2.npz'):
 
 if __name__ == '__main__':
     # list of sizes in MB
-    nlist = [1024 * 128 * int(k) for k in np.logspace(1, 10, 16, base=2.0)]
+    nlist = [1024 * 128 * int(k) for k in np.logspace(1, 10, 15, base=2.0)]
     ntests = 5
-    bench(nlist, ntests, 'bench2.npz')
+    comm = MPI.COMM_WORLD
+    nproc = comm.Get_size()
+    outname = f"bench6-{nproc}.npz"
+    bench(nlist, ntests, outname)
